@@ -1,12 +1,13 @@
 import React from 'react';
-import { Home, Star, ShoppingBag, User } from 'lucide-react';
+import { Home, Star, ShoppingBag, Users, User } from 'lucide-react';
 
 export default function BottomNav({ currentScreen, navigate }) {
   const navItems = [
     { id: 'home', icon: Home, label: 'Home' },
     { id: 'rewards', icon: Star, label: 'Rewards' },
     { id: 'reorder', icon: ShoppingBag, label: 'Reorder' },
-    { id: 'profile', icon: User, label: 'Profile' },
+    { id: 'hub', icon: Users, label: 'Hub' },
+    { id: 'account', icon: User, label: 'Account' },
   ];
 
   return (
