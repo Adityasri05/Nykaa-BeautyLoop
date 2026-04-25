@@ -66,7 +66,7 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen max-h-screen max-w-md mx-auto bg-[#faf7f5] relative font-sans text-gray-900 overflow-hidden sm:shadow-2xl sm:border sm:border-gray-200 selection:bg-nykaa-pink selection:text-white">
+    <div className="flex flex-col h-screen max-h-screen w-full md:max-w-2xl lg:max-w-4xl mx-auto bg-[#faf7f5] relative font-sans text-gray-900 overflow-hidden sm:shadow-2xl sm:border sm:border-gray-200 selection:bg-nykaa-pink selection:text-white">
       
       {/* Splash Screen */}
       {isSplashVisible && (

@@ -21,9 +21,10 @@ export default function Reorder({ navigate, showSuccess }) {
         <h1 className="text-lg font-bold ml-2">Quick Reorder</h1>
       </header>
 
-      <div className="p-5 space-y-5">
-        <p className="text-sm text-gray-500">Products you've bought before, ready to restock.</p>
+      <div className="p-5 md:p-8">
+        <p className="text-sm text-gray-500 mb-5">Products you've bought before, ready to restock.</p>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
         {items.map(item => (
           <div key={item.id} className="border border-gray-100 rounded-3xl p-4 shadow-sm flex flex-col gap-4">
             <div className="flex gap-4">
@@ -61,6 +62,7 @@ export default function Reorder({ navigate, showSuccess }) {
             </button>
           </div>
         ))}
+        </div>
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ export default function Home({ navigate, showSuccess, points }) {
   const itemToReorder = reorderItems[0]; // Example: Cetaphil Facewash
 
   return (
-    <div className="p-5 space-y-6 pb-6 animate-pop">
+    <div className="p-5 md:p-8 space-y-8 md:space-y-10 pb-6 animate-pop">
       
       {/* Header */}
       <header className="flex justify-between items-center pt-2">
@@ -19,9 +19,10 @@ export default function Home({ navigate, showSuccess, points }) {
         </div>
       </header>
 
-      {/* Loyalty Points Card */}
-      <div 
-        onClick={() => navigate('rewards')}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        {/* Loyalty Points Card */}
+        <div 
+          onClick={() => navigate('rewards')}
         className="bg-black text-white rounded-3xl p-5 shadow-xl relative overflow-hidden cursor-pointer active:scale-95 transition-transform"
       >
         <div className="relative z-10 flex justify-between items-center">
@@ -72,6 +73,7 @@ export default function Home({ navigate, showSuccess, points }) {
           </button>
         </div>
       </div>
+      </div>
 
       {/* Recommendations */}
       <div>
@@ -85,9 +87,9 @@ export default function Home({ navigate, showSuccess, points }) {
           </button>
         </div>
         
-        <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 -mx-5 px-5">
-          {recommendedProducts.slice(0, 2).map(product => (
-            <div key={product.id} className="min-w-[140px] bg-white border border-gray-100 rounded-2xl p-3 shadow-sm">
+        <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 -mx-5 px-5 md:mx-0 md:px-0">
+          {recommendedProducts.map(product => (
+            <div key={product.id} className="min-w-[140px] md:min-w-[180px] flex-1 bg-white border border-gray-100 rounded-2xl p-3 shadow-sm hover:shadow-md transition-shadow">
               <div className="relative mb-2 bg-gray-50 rounded-xl overflow-hidden aspect-square flex items-center justify-center">
                 <img src={product.image} alt={product.name} className="w-full h-full object-cover mix-blend-multiply" />
                 <div className="absolute top-0 left-0 bg-nykaa-pink text-white text-[10px] font-bold px-2 py-0.5 rounded-br-lg">

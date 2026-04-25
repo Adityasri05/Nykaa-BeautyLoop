@@ -29,7 +29,7 @@ export default function Recommendations({ navigate, showSuccess }) {
           Curated for {userData.skinType}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
           {recommendedProducts.map(product => (
             <div key={product.id} className="bg-white border border-gray-100 rounded-3xl p-3 shadow-sm flex flex-col">
               <div className="relative mb-3 bg-gray-50 rounded-2xl overflow-hidden aspect-square flex items-center justify-center p-2">

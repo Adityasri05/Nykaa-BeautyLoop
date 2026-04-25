@@ -20,7 +20,7 @@ export default function Rewards({ navigate, showSuccess, points, setPoints, miss
         <h1 className="text-lg font-bold ml-2">Glow Rewards</h1>
       </header>
 
-      <div className="p-5 space-y-6">
+      <div className="p-5 md:p-8 md:grid md:grid-cols-2 md:gap-8 space-y-6 md:space-y-0">
         
         {/* Tier Card */}
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center">
