@@ -28,15 +28,17 @@ export default function SpinWheel({ onClose, onReward }) {
     const extraSpins = 360 * 8; // 8 full rotations for drama
     const targetAngle = extraSpins + (360 - winIndex * segmentAngle - segmentAngle / 2);
 
-    setRotation(targetAngle);
+    // Use requestAnimationFrame to ensure the transition is applied before transform
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setRotation(targetAngle);
+      });
+    });
 
     setTimeout(() => {
       setSpinning(false);
       setResult(REWARDS[winIndex]);
       setShowConfetti(true);
-      if (REWARDS[winIndex].type === 'points') {
-        onReward(REWARDS[winIndex].value);
-      }
     }, 5000);
   };
 
@@ -181,7 +183,14 @@ export default function SpinWheel({ onClose, onReward }) {
                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-80 mb-1">CONGRATULATIONS!</h4>
                <p className="text-3xl font-black tracking-tighter mb-4">You Won {result?.label}</p>
                <button
-                 onClick={onClose}
+                 onClick={() => {
+                   if (result.type === 'points') {
+                     onReward(result.value);
+                   } else {
+                     onReward({ label: result.label, isSpecial: true });
+                   }
+                   onClose();
+                 }}
                  className="w-full bg-white text-nykaa-pink font-black py-4 rounded-2xl text-[10px] uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all"
                >
                  CLAIM REWARD

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, ArrowRight, AlertCircle, ShieldCheck, Zap, Heart } from 'lucide-react';
+import { Sparkles, ArrowRight, Zap, Heart, ShieldCheck, AlertCircle } from 'lucide-react';
 import { auth, db } from '../firebase';
 import { 
   createUserWithEmailAndPassword, 

@@ -31,6 +31,7 @@ export default function AIRoutineBuilder({ navigate, showSuccess, addToCart }) {
     setTimeout(() => {
       setLoading(false);
       setShowRoutine(true);
+      showSuccess(100, "Routine Built! +100 Points");
     }, 2000);
   };
 

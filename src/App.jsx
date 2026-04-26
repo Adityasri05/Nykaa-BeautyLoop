@@ -3,56 +3,46 @@ import Home from './pages/Home';
 import Rewards from './pages/Rewards';
 import Reorder from './pages/Reorder';
 import Recommendations from './pages/Recommendations';
-import RoutineTracker from './pages/RoutineTracker';
 import BeautyLoopHub from './pages/BeautyLoopHub';
-import UGCFeed from './pages/UGCFeed';
-import BeautyQuiz from './pages/BeautyQuiz';
+import VirtualTryOn from './pages/VirtualTryOn';
 import ShadeFinder from './pages/ShadeFinder';
-import AIRoutineBuilder from './pages/AIRoutineBuilder';
-import NotificationSettings from './pages/NotificationSettings';
+import RoutineTracker from './pages/RoutineTracker';
 import Account from './pages/Account';
 import Orders from './pages/Orders';
+import Cart from './pages/Cart';
 import Wishlist from './pages/Wishlist';
-import ProfileInfo from './pages/ProfileInfo';
 import Addresses from './pages/Addresses';
 import Payments from './pages/Payments';
+import NotificationSettings from './pages/NotificationSettings';
 import HelpCenter from './pages/HelpCenter';
 import PrivacyPolicy from './pages/PrivacyPolicy';
-import VirtualTryOn from './pages/VirtualTryOn';
-import Cart from './pages/Cart';
-import Auth from './pages/Auth';
+import ProfileInfo from './pages/ProfileInfo';
 import SuccessModal from './components/SuccessModal';
-import SpinWheel from './components/SpinWheel';
-import ReviewReward from './components/ReviewReward';
-import BirthdayReward from './components/BirthdayReward';
 import BottomNav from './components/BottomNav';
-import { auth, db } from './firebase';
+import Auth from './pages/Auth';
+import { auth } from './firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
 import { userData, initialMissions } from './data';
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState('home');
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem('isAuthenticated') === 'true';
-  });
-  const [userName, setUserName] = useState(() => {
-    return localStorage.getItem('userName') || 'Aditi';
-  });
   const [successData, setSuccessData] = useState(null);
   const [isSplashVisible, setIsSplashVisible] = useState(true);
-  const [showSpinWheel, setShowSpinWheel] = useState(false);
-  const [showReviewPopup, setShowReviewPopup] = useState(false);
-  const [showBirthdayPopup, setShowBirthdayPopup] = useState(false);
-  const [cart, setCart] = useState(() => {
-    const saved = localStorage.getItem('nykaa_cart');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [cart, setCart] = useState([]);
+  
+  // Auth state
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   // Dynamic state for persistence
   const [points, setPoints] = useState(() => {
     const saved = localStorage.getItem('nykaa_points');
     return saved ? parseInt(saved, 10) : userData.points;
+  });
+
+  const [orders, setOrders] = useState(() => {
+    const saved = localStorage.getItem('nykaa_orders');
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [missions, setMissions] = useState(() => {
@@ -61,32 +51,9 @@ function App() {
   });
 
   useEffect(() => {
-    localStorage.setItem('nykaa_cart', JSON.stringify(cart));
-  }, [cart]);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setIsAuthenticated(true);
-        setUserName(user.displayName || 'Guest');
-        localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('userName', user.displayName || 'Guest');
-
-        // Fetch points from Firestore
-        try {
-          const userDoc = await getDoc(doc(db, "users", user.uid));
-          if (userDoc.exists()) {
-            setPoints(userDoc.data().points || 500);
-          }
-        } catch (err) {
-          console.error("Error fetching user data:", err);
-        }
-      } else {
-        setIsAuthenticated(false);
-        setUserName('Guest');
-        localStorage.removeItem('isAuthenticated');
-        localStorage.removeItem('userName');
-      }
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setAuthLoading(false);
     });
     return () => unsubscribe();
   }, []);
@@ -100,165 +67,84 @@ function App() {
   }, [missions]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsSplashVisible(false);
-    }, 2000);
+    const timer = setTimeout(() => setIsSplashVisible(false), 2000);
     return () => clearTimeout(timer);
   }, []);
-
-  // Auto-show Review popup after 12s
-  useEffect(() => {
-    if (isAuthenticated && !isSplashVisible) {
-      const hasSeenReview = sessionStorage.getItem('seenReview');
-      if (!hasSeenReview) {
-        const timer = setTimeout(() => {
-          setShowReviewPopup(true);
-          sessionStorage.setItem('seenReview', 'true');
-        }, 12000);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [isAuthenticated, isSplashVisible]);
-
-  // Auto-show Birthday popup after 5s
-  useEffect(() => {
-    if (isAuthenticated && !isSplashVisible) {
-      const hasSeenBirthday = sessionStorage.getItem('seenBirthday');
-      if (!hasSeenBirthday) {
-        const timer = setTimeout(() => {
-          setShowBirthdayPopup(true);
-          sessionStorage.setItem('seenBirthday', 'true');
-        }, 5000);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [isAuthenticated, isSplashVisible]);
 
   const navigate = (screen) => {
     setCurrentScreen(screen);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleLogin = (name) => {
-    setIsAuthenticated(true);
-    localStorage.setItem('isAuthenticated', 'true');
-    if (name) {
-      setUserName(name);
-      localStorage.setItem('userName', name);
+  const showSuccess = (pointsToAdd, message = "Awesome!") => {
+    if (pointsToAdd) {
+      setPoints(prev => prev + pointsToAdd);
     }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      setIsAuthenticated(false);
-      localStorage.removeItem('isAuthenticated');
-      localStorage.removeItem('userName');
-      setCurrentScreen('home');
-    } catch (err) {
-      console.error("Logout failed:", err);
-    }
-  };
-
-  const showSuccess = (pts, message = "Awesome!") => {
-    setSuccessData({ points: pts, message });
-    setPoints(prev => prev + pts);
-  };
-
-  const handleSpinReward = (pts) => {
-    setPoints(prev => prev + pts);
+    setSuccessData({ points: pointsToAdd, message });
   };
 
   const addToCart = (product) => {
-    setCart(prev => {
-      const existing = prev.find(item => item.id === product.id);
-      if (existing) {
-        return prev.map(item => 
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-        );
-      }
-      return [...prev, { ...product, quantity: 1 }];
-    });
-    showSuccess(10, "Added to Bag!");
+    setCart(prev => [...prev, { ...product, cartId: Date.now() }]);
   };
 
-  const removeFromCart = (productId) => {
-    setCart(prev => prev.filter(item => item.id !== productId));
+  const addOrder = (order) => {
+    const newOrders = [order, ...orders];
+    setOrders(newOrders);
+    localStorage.setItem('nykaa_orders', JSON.stringify(newOrders));
   };
 
-  const updateQuantity = (productId, delta) => {
-    setCart(prev => prev.map(item => {
-      if (item.id === productId) {
-        const newQty = Math.max(1, item.quantity + delta);
-        return { ...item, quantity: newQty };
-      }
-      return item;
-    }));
+  const handleLogout = () => {
+    signOut(auth).catch(err => console.error("Logout error", err));
   };
 
   const renderScreen = () => {
+    const commonProps = { navigate, showSuccess, addToCart, addOrder };
+    const userName = user?.displayName || userData.name;
+    
     switch (currentScreen) {
       case 'home':
-        return (
-          <Home
-            navigate={navigate}
-            showSuccess={showSuccess}
-            addToCart={addToCart}
-            points={points}
-            onLogout={handleLogout}
-            userName={userName}
-            onOpenSpin={() => setShowSpinWheel(true)}
-          />
-        );
+        return <Home {...commonProps} points={points} userName={userName} />;
       case 'rewards':
-        return <Rewards navigate={navigate} showSuccess={showSuccess} points={points} setPoints={setPoints} missions={missions} setMissions={setMissions} />;
+        return <Rewards {...commonProps} points={points} setPoints={setPoints} missions={missions} setMissions={setMissions} />;
       case 'reorder':
-        return <Reorder navigate={navigate} showSuccess={showSuccess} addToCart={addToCart} />;
+        return <Reorder {...commonProps} />;
       case 'recommendations':
-        return <Recommendations navigate={navigate} showSuccess={showSuccess} addToCart={addToCart} />;
-      case 'routine':
-        return <RoutineTracker navigate={navigate} showSuccess={showSuccess} addToCart={addToCart} />;
+        return <Recommendations {...commonProps} />;
       case 'hub':
-        return <BeautyLoopHub navigate={navigate} showSuccess={showSuccess} userName={userName} />;
-      case 'feed':
-        return <UGCFeed navigate={navigate} showSuccess={showSuccess} />;
-      case 'quiz':
-        return <BeautyQuiz navigate={navigate} showSuccess={showSuccess} />;
+        return <BeautyLoopHub {...commonProps} userName={userName} />;
+      case 'virtual-try-on':
+        return <VirtualTryOn {...commonProps} />;
       case 'shade-finder':
-        return <ShadeFinder navigate={navigate} showSuccess={showSuccess} addToCart={addToCart} />;
-      case 'routine-builder':
-        return <AIRoutineBuilder navigate={navigate} showSuccess={showSuccess} addToCart={addToCart} />;
-      case 'notifications':
-        return <NotificationSettings navigate={navigate} />;
-      case 'account':
-        return <Account navigate={navigate} onLogout={handleLogout} userName={userName} points={points} />;
-      case 'orders':
-        return <Orders navigate={navigate} addToCart={addToCart} />;
-      case 'wishlist':
-        return <Wishlist navigate={navigate} showSuccess={showSuccess} addToCart={addToCart} />;
-      case 'profile':
-        return <ProfileInfo navigate={navigate} userName={userName} />;
-      case 'addresses':
-        return <Addresses navigate={navigate} />;
-      case 'payments':
-        return <Payments navigate={navigate} />;
-      case 'help':
-        return <HelpCenter navigate={navigate} />;
-      case 'privacy':
-        return <PrivacyPolicy navigate={navigate} />;
-      case 'vto':
-        return <VirtualTryOn navigate={navigate} showSuccess={showSuccess} />;
+        return <ShadeFinder {...commonProps} />;
+      case 'routine-tracker':
+        return <RoutineTracker {...commonProps} />;
       case 'cart':
-        return <Cart navigate={navigate} cart={cart} removeFromCart={removeFromCart} updateQuantity={updateQuantity} />;
+        return <Cart {...commonProps} cart={cart} setCart={setCart} />;
+      case 'account':
+        return <Account {...commonProps} userName={userName} points={points} onLogout={handleLogout} />;
+      case 'orders':
+        return <Orders {...commonProps} orders={orders} />;
+      case 'wishlist':
+        return <Wishlist {...commonProps} />;
+      case 'addresses':
+        return <Addresses {...commonProps} />;
+      case 'payments':
+        return <Payments {...commonProps} />;
+      case 'notifications':
+        return <NotificationSettings {...commonProps} />;
+      case 'help':
+        return <HelpCenter {...commonProps} />;
+      case 'privacy':
+        return <PrivacyPolicy {...commonProps} />;
+      case 'profile':
+        return <ProfileInfo {...commonProps} userName={userName} />;
       default:
-        return <Home navigate={navigate} showSuccess={showSuccess} points={points} onLogout={handleLogout} userName={userName} onOpenSpin={() => setShowSpinWheel(true)} />;
+        return <Home {...commonProps} points={points} userName={userName} />;
     }
   };
 
   return (
-    <div className="flex flex-col h-screen max-h-screen w-full md:max-w-3xl lg:max-w-6xl mx-auto bg-[#faf7f5] relative font-sans text-gray-900 overflow-hidden sm:shadow-2xl sm:border sm:border-gray-200 selection:bg-nykaa-pink selection:text-white transition-all duration-300">
-      
-      {/* Splash Screen */}
+    <div className="flex flex-col h-screen max-h-screen w-full bg-[#faf7f5] relative font-sans text-gray-900 overflow-hidden selection:bg-nykaa-pink selection:text-white">
       {isSplashVisible && (
         <div className="absolute inset-0 z-[100] bg-nykaa-gradient flex flex-col items-center justify-center transition-opacity duration-500">
           <div className="animate-float-up text-center">
@@ -268,35 +154,32 @@ function App() {
         </div>
       )}
 
-      {/* Main Content or Auth */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden relative">
-        {!isAuthenticated ? (
-          <Auth onLogin={handleLogin} />
-        ) : (
-          <div className="animate-fadeIn h-full pb-16">
-            {renderScreen()}
-          </div>
-        )}
-      </div>
+      {authLoading ? (
+        <div className="flex-1 flex items-center justify-center bg-[#faf7f5] h-full w-full z-50">
+          <div className="w-10 h-10 border-4 border-nykaa-pink/30 border-t-nykaa-pink rounded-full animate-spin"></div>
+        </div>
+      ) : !user ? (
+        <main className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar bg-white h-full w-full z-40 relative">
+          <Auth onLogin={() => {}} />
+        </main>
+      ) : (
+        <>
+          <main className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar bg-[#faf7f5] pb-16">
+            <div className="animate-fadeIn h-full w-full max-w-7xl mx-auto">
+              {renderScreen()}
+            </div>
+          </main>
 
-      {/* Persistent Bottom Navigation */}
-      {isAuthenticated && !isSplashVisible && <BottomNav currentScreen={currentScreen} navigate={navigate} />}
-
-      {/* ===== OVERLAY MODALS ===== */}
-
-      {showSpinWheel && <SpinWheel onClose={() => setShowSpinWheel(false)} onReward={handleSpinReward} />}
-      {showReviewPopup && <ReviewReward onClose={() => setShowReviewPopup(false)} onSubmit={(pts) => showSuccess(pts, "Review Submitted!")} />}
-      {showBirthdayPopup && <BirthdayReward onClose={() => setShowBirthdayPopup(false)} onClaim={(pts) => showSuccess(pts, "Birthday Rewards Claimed!")} />}
+          {!isSplashVisible && <BottomNav currentScreen={currentScreen} navigate={navigate} cartCount={cart.length} />}
+        </>
+      )}
 
       {successData && (
-        <SuccessModal 
-          points={successData.points} 
-          message={successData.message}
-          onClose={() => setSuccessData(null)} 
-        />
+        <SuccessModal points={successData.points} message={successData.message} onClose={() => setSuccessData(null)} />
       )}
     </div>
   );
 }
 
 export default App;
+

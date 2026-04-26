@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronLeft, Sparkles, ArrowRight, Check } from 'lucide-react';
+import { ChevronLeft, Sparkles, Check } from 'lucide-react';
 
 const QUESTIONS = [
   {
@@ -43,7 +43,7 @@ const QUIZ_RESULTS = [
   },
 ];
 
-export default function BeautyQuiz({ navigate, showSuccess }) {
+export default function BeautyQuiz({ navigate, showSuccess, addToCart }) {
   const [step, setStep] = useState(0); // 0-2 = questions, 3 = results
   const [answers, setAnswers] = useState({});
 
@@ -52,7 +52,10 @@ export default function BeautyQuiz({ navigate, showSuccess }) {
     if (step < QUESTIONS.length - 1) {
       setTimeout(() => setStep(step + 1), 300);
     } else {
-      setTimeout(() => setStep(QUESTIONS.length), 300); // Show results
+      setTimeout(() => {
+        setStep(QUESTIONS.length); // Show results
+        showSuccess(50, "Quiz Completed! +50 Points");
+      }, 300);
     }
   };
 
@@ -89,7 +92,7 @@ export default function BeautyQuiz({ navigate, showSuccess }) {
                   <p className="font-bold text-sm text-gray-900 mt-1">{product.price}</p>
                 </div>
                 <button
-                  onClick={() => showSuccess(25)}
+                  onClick={() => addToCart(product)}
                   className="bg-black text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-nykaa-pink transition-colors shrink-0"
                 >
                   Add

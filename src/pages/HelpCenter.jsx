@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronLeft, Search, MessageSquare, Phone, Mail, ChevronRight, HelpCircle } from 'lucide-react';
+import { ChevronLeft, MessageSquare, Phone, Mail, ChevronRight, Search, HelpCircle } from 'lucide-react';
 
 const FAQS = [
   "How to track my order?",

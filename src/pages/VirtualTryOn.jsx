@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronLeft, Camera, RefreshCcw, ShoppingBag, Check } from 'lucide-react';
+import { ChevronLeft, Camera, ShoppingBag } from 'lucide-react';
 
 const SHADES = [
   { id: 1, name: 'Ruby Rush', color: '#B91C1C', brand: 'M.A.C' },
@@ -9,9 +9,10 @@ const SHADES = [
   { id: 5, name: 'Berry Bliss', color: '#701A75', brand: 'Sugar' },
 ];
 
-export default function VirtualTryOn({ navigate, showSuccess }) {
+export default function VirtualTryOn({ navigate, showSuccess, addToCart }) {
   const [selectedShade, setSelectedShade] = useState(SHADES[0]);
   const [isCameraActive, setIsCameraActive] = useState(false);
+  const [hasEarnedPoints, setHasEarnedPoints] = useState(false);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
@@ -21,6 +22,10 @@ export default function VirtualTryOn({ navigate, showSuccess }) {
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         setIsCameraActive(true);
+        if (!hasEarnedPoints) {
+          showSuccess(20, "Virtual Try-On Active! +20 Points");
+          setHasEarnedPoints(true);
+        }
       }
     } catch (err) {
       console.error("Camera error:", err);
@@ -124,7 +129,13 @@ export default function VirtualTryOn({ navigate, showSuccess }) {
             <p className="text-xs font-bold text-gray-400">₹850</p>
           </div>
           <button 
-            onClick={() => showSuccess(50, "Added to Bag!")}
+            onClick={() => addToCart({
+              id: `vto-${selectedShade.id}`,
+              name: `Matte Me Lipstick - ${selectedShade.name}`,
+              brand: selectedShade.brand,
+              price: "₹850",
+              image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&q=80&w=100"
+            })}
             className="bg-white text-black px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2"
           >
             <ShoppingBag className="w-3 h-3" /> ADD

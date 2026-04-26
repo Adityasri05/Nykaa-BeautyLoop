@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { ChevronLeft, Heart, MessageCircle, Share2, ShoppingBag, CheckCircle2, Music, Volume2, Plus, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Heart, MessageCircle, Share2, ShoppingBag, CheckCircle2, Music, Volume2, Plus, X } from 'lucide-react';
 
-export default function UGCFeed({ navigate, showSuccess }) {
+export default function UGCFeed({ navigate, showSuccess, addToCart }) {
   const posts = [
     {
       id: 1,
@@ -182,7 +182,13 @@ export default function UGCFeed({ navigate, showSuccess }) {
                     <div className="flex justify-between items-center mt-auto">
                       <span className="text-lg font-black text-gray-900">{product.price}</span>
                       <button 
-                        onClick={() => showSuccess(20, "Added to Bag!")}
+                        onClick={() => {
+                          addToCart({
+                            id: `ugc-${product.name.replace(/\s+/g, '-').toLowerCase()}`,
+                            ...product
+                          });
+                          showSuccess(20, "Added to Bag!");
+                        }}
                         className="bg-black text-white px-6 py-2.5 rounded-xl text-xs font-bold hover:bg-nykaa-pink transition-all active:scale-95 shadow-lg shadow-black/10"
                       >
                         Add to Bag

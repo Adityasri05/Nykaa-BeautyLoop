@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronLeft, Sparkles, Check, ArrowRight } from 'lucide-react';
+import { ChevronLeft, Sparkles, Check } from 'lucide-react';
 
 const SHADE_QUESTIONS = [
   {
@@ -46,7 +46,10 @@ export default function ShadeFinder({ navigate, showSuccess, addToCart }) {
     if (step < SHADE_QUESTIONS.length - 1) {
       setTimeout(() => setStep(step + 1), 300);
     } else {
-      setTimeout(() => setStep(SHADE_QUESTIONS.length), 300);
+      setTimeout(() => {
+        setStep(SHADE_QUESTIONS.length);
+        showSuccess(50, "Shades Found! +50 Points");
+      }, 300);
     }
   };
 
