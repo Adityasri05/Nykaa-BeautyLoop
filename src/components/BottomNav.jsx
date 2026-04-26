@@ -11,7 +11,7 @@ export default function BottomNav({ currentScreen, navigate, cartCount }) {
   ];
 
   return (
-    <div className="absolute bottom-0 w-full bg-white/90 backdrop-blur-md border-t border-gray-100 pb-safe z-50">
+    <div className="fixed bottom-0 left-0 right-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-100 z-50" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
       <div className="flex justify-around items-center h-16 max-w-xl mx-auto">
         {navItems.map((item) => {
           const Icon = item.icon;

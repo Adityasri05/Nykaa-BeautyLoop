@@ -144,7 +144,7 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen max-h-screen w-full bg-[#faf7f5] relative font-sans text-gray-900 overflow-hidden selection:bg-nykaa-pink selection:text-white">
+    <div className="flex flex-col h-screen w-full bg-[#faf7f5] relative font-sans text-gray-900 selection:bg-nykaa-pink selection:text-white">
       {isSplashVisible && (
         <div className="absolute inset-0 z-[100] bg-nykaa-gradient flex flex-col items-center justify-center transition-opacity duration-500">
           <div className="animate-float-up text-center">
@@ -164,7 +164,7 @@ function App() {
         </main>
       ) : (
         <>
-          <main className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar bg-[#faf7f5] pb-16">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar bg-[#faf7f5] pb-20">
             <div className="animate-fadeIn h-full w-full max-w-7xl mx-auto">
               {renderScreen()}
             </div>
