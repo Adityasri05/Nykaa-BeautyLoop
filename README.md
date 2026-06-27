@@ -7,7 +7,9 @@
 ## 🎀 The Problem
 In the highly competitive beauty e-commerce space, **first-time buyer retention** is a critical challenge. Users often treat beauty apps as one-off purchase destinations rather than a daily habit. 
 
+
 **Nykaa Glow Rewards** is designed to bridge this gap by transforming the post-purchase experience into a rewarding journey of self-care.
+
 
 ## 🚀 Key Features
 
